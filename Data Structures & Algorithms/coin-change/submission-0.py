@@ -1,18 +1,25 @@
 class Solution:
     def coinChange(self, coins: List[int], amount: int) -> int:
-        dp = [amount + 1] * (amount + 1)
+        memo = {}
+        def recurse(remaining):
+            # returns fewest num of coins for a given remaining amount
+            if remaining == 0:
+                # need 0 coins for 0 remaining
+                return 0
+            if remaining in memo:
+                return memo[remaining]
 
-        dp[0] = 0
-
-        # working
-        # for 12
-        # we go from 12 - 10 = 2 -> 2 - 1 = 1 -> 1 - 1 = 0 takes 3 turns
-        # so variable tracked is the amt 
-
-
-        for a in range(1, amount+1):
+            # lets say i have 12 at start
+            # after process
+            minim = float('inf')
             for coin in coins:
-                if a - coin >= 0:
-                    dp[a] = min(dp[a], 1 + dp[a-coin])
-        
-        return dp[amount] if dp[amount] != amount + 1 else -1
+                if remaining - coin >= 0:
+                    minim = min(1 + recurse(remaining - coin), minim)
+            memo[remaining] = minim
+            return minim
+
+        # in the case hat from the first value coins arent sufficient
+        val = recurse(amount)
+        if val == float('inf'):
+            return -1
+        return val
